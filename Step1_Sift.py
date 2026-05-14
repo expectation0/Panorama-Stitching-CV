@@ -5,6 +5,9 @@ import matcher  # onurun yazdığı matcher.py dosyasından fonksiyonları içe 
 import homografi
 import birlestirme
 
+# Terminale/CI’da takılmamak için: HEADLESS=1 python3 Step1_Sift.py
+HEADLESS = os.environ.get("HEADLESS", "").lower() in ("1", "true", "yes")
+
 # images altında üç görüntü seti: her klasörde sol + sağ kaynak fotoğraflar
 GORUNTU_SETLERI = [
     ("images/Clock", "sol1.jpg", "sag1.jpg"),
@@ -111,9 +114,11 @@ if __name__ == "__main__":
     for idx, (klasor, sol_ad, sag_ad) in enumerate(GORUNTU_SETLERI):
         # Üç seti arka arkaya işle; pencere karmaşası olmasın diye sadece son seti ekranda göster
         son_set = idx == len(GORUNTU_SETLERI) - 1
-        _bir_klasor_isle(klasor, sol_ad, sag_ad, gorsel_goster=son_set)
+        _bir_klasor_isle(klasor, sol_ad, sag_ad, gorsel_goster=son_set and not HEADLESS)
 
-    print("\nİşlem tamam! Üç görüntü seti işlendi. Çıkmak için herhangi bir tuşa bas.")
-
-    cv2.waitKey(0)
+    if HEADLESS:
+        print("\nİşlem tamam! Üç görüntü seti işlendi (HEADLESS, GUI yok).")
+    else:
+        print("\nİşlem tamam! Üç görüntü seti işlendi. Çıkmak için herhangi bir tuşa bas.")
+        cv2.waitKey(0)
     cv2.destroyAllWindows()
